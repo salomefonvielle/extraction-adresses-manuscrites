@@ -10,11 +10,11 @@ Le principal défi : les documents **manuscrits** rendent les OCR classiques (Te
 
 ## Trois pipelines comparées
 
-| Pipeline | OCR | Extraction | Durée / doc | Résultat |
-|---|---|---|---|---|
-| `tesseract_llm` | Tesseract | LLM | — | ❌ Exclu |
-| `vlm_llm` | VLM (Qwen3-VL) | LLM | ~2m24s | ✅ Recommandée |
-| `vlm_vlm` | — (lecture directe) | VLM (Qwen3-VL) | ~40s | ⚠️ À surveiller |
+| Pipeline | OCR | Extraction | Durée / doc | Qualité / Coût | Résultat |
+|---|---|---|---|---|---|
+| `tesseract_llm` | Tesseract | LLM | — | Rapide, peu coûteux | ❌ Exclu |
+| `vlm_llm` | VLM (Qwen3-VL) | LLM | ~2m24s | Qualitatif, coûteux | ✅ Recommandée |
+| `vlm_vlm` | — (lecture directe) | VLM (Qwen3-VL) | ~40s | Intermédiaire | ⚠️ À surveiller |
 
 ### Résultats des tests (2 documents)
 
@@ -27,7 +27,7 @@ Deux types de documents ont été testés : un document **entièrement manuscrit
 
 ### Conclusion
 
-Tesseract est **exclu** pour ce type de documents manuscrits. La pipeline `vlm_llm` offre la meilleure fiabilité mais implique un coût computationnel et une durée de traitement élevés (~2m24s/doc). La pipeline `vlm_vlm` est plus rapide (~40s/doc) mais introduit des erreurs d'initiative.
+Les trois pipelines ont été comparées selon un **axe qualité/coût**. Tesseract est **exclu** pour ce type de documents manuscrits. La pipeline `vlm_llm` offre la meilleure fiabilité mais implique un coût computationnel et une durée de traitement élevés (~2m24s/doc). La pipeline `vlm_vlm` est plus rapide (~40s/doc) mais introduit des erreurs d'initiative.
 
 Une **industrialisation sur un échantillon plus large** serait nécessaire pour trancher définitivement entre `vlm_llm` et `vlm_vlm`.
 
