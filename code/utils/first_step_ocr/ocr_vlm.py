@@ -17,16 +17,6 @@ from PyPDF2 import PdfMerger
 
 
 # ------------------------------------------------------------
-# Configuration du proxy (déjà présent dans votre projet)
-# ------------------------------------------------------------
-os.environ["no_proxy"] = (
-    "100.70.1.199,forge.dgfip.finances.rie.gouv.fr,"
-    "pia-exp-back.dev.dgfip,pia-exp-front.dev.dgfip,"
-    "10.156.253.10,huggingface.co,10.156.253.13,"
-    "10.156.226.144,10.156.226.145"
-)
-
-# ------------------------------------------------------------
 # Chargement du .env (une seule fois)
 # ------------------------------------------------------------
 from dotenv import load_dotenv
