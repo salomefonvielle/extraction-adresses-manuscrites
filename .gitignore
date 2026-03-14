@@ -1,8 +1,8 @@
 # Données et sorties
 datas/
-logs/*
-logs /*
-!logs/.gitkeep
+logs/**/*.log
+!logs/**/.gitkeep
+logs /
 
 # Outils locaux
 .claude/
