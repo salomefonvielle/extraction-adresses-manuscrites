@@ -2,7 +2,6 @@
 datas/
 logs/**/*.log
 !logs/**/.gitkeep
-logs /
 
 # Outils locaux
 .claude/

@@ -13,8 +13,8 @@ Le principal défi : les documents **manuscrits** rendent les OCR classiques (Te
 | Pipeline | OCR | Extraction | Durée / doc | Qualité / Coût | Résultat |
 |---|---|---|---|---|---|
 | `tesseract_llm` | Tesseract | LLM (Gpt-oss-120b) | — | Rapide, peu coûteux | ❌ Exclu |
-| `vlm_llm` | VLM (Qwen3-VL-32B) | LLM (Gpt-oss-120b) | ~2m24s | Qualitatif, coûteux | ✅ Recommandée |
-| `vlm_vlm` | — (lecture directe) | VLM (Qwen3-VL-32B) | ~40s | Intermédiaire | ⚠️ À surveiller |
+| `vlm_llm` | VLM (Qwen3-VL-32B-Instruct-FP8) | LLM (Gpt-oss-120b) | ~2m24s | Qualitatif, coûteux | ✅ Recommandée |
+| `vlm_vlm` | — (lecture directe) | VLM (Qwen3-VL-32B-Instruct-FP8) | ~40s | Intermédiaire | ⚠️ À surveiller |
 
 ### Résultats des tests (2 documents)
 
@@ -50,7 +50,7 @@ CSV enrichi → [1. OCR] → texte brut → [2. Scoring] → meilleur paragraphe
 ```
 
 **Étape 1 — OCR** (`code/utils/first_step_ocr/`)
-Transcription page par page : Tesseract pour `tesseract_llm`, VLM (Qwen3-VL-32B) pour `vlm_llm`.
+Transcription page par page : Tesseract pour `tesseract_llm`, VLM (Qwen3-VL-32B-Instruct-FP8) pour `vlm_llm`.
 
 **Étape 2 — Scoring** (`code/utils/second_step_scores/`)
 Identification du paragraphe le plus pertinent par fuzzy matching sur le nom, les prénoms, la date de naissance et le code postal.
@@ -101,6 +101,27 @@ logs/
         ├── first_step_ocr/          # Modules OCR
         ├── second_step_scores/      # Scoring des paragraphes candidats
         └── third_step_extraction/   # Extraction finale
+```
+
+## Données
+
+Le dossier `datas/` est ignoré par Git (données institutionnelles sensibles). Il doit être créé manuellement avec la structure suivante :
+
+```
+datas/
+├── inputs/
+│   ├── fichier_traites.csv      # CSV d'entrée (colonnes identité + référence PDF)
+│   └── PDF/                     # Répertoire contenant les fichiers PDF à traiter
+└── outputs/                     # Générés automatiquement par les pipelines
+    ├── fichier_traites_enrichis.csv   # CSV enrichi avec chemins PDF (étape 0)
+    ├── vlm_llm/
+    │   ├── ocr.csv              # Transcriptions OCR par VLM
+    │   └── predictions.csv      # Adresses extraites
+    ├── tesseract_llm/
+    │   ├── ocr.csv              # Transcriptions OCR par Tesseract
+    │   └── predictions.csv      # Adresses extraites
+    └── vlm_vlm/
+        └── predictions.csv      # Adresses extraites (extraction directe)
 ```
 
 ## Installation
