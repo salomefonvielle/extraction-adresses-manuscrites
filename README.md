@@ -1,6 +1,6 @@
 # Extraction d'adresses depuis des documents PDF
 
-Pipeline d'extraction automatique d'adresses postales à partir de documents officiels numérisés, développé dans le cadre d'un stage en institution.
+Pipeline d'extraction automatique d'adresses postales à partir de formulaires compélétés sous forme manuscrite, numérisés, développé dans le cadre d'un stage en institution.
 
 ## Contexte
 
