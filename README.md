@@ -68,6 +68,21 @@ CSV enrichi → [VLM + identité] → adresse structurée (JSON)
 
 Le VLM reçoit directement les images du PDF et les données d'identité (nom, prénom, date de naissance) injectées dans le prompt. Il retourne un JSON structuré sans étape OCR ni scoring intermédiaire.
 
+---
+
+### Logging
+
+Chaque module écrit ses logs dans un sous-dossier dédié :
+
+```
+logs/
+├── run_all/          # orchestration générale (main.py)
+├── pretraitement/    # étape 0
+├── vlm_llm/          # pipeline VLM → LLM
+├── tesseract_llm/    # pipeline Tesseract → LLM
+└── vlm_vlm/          # pipeline VLM → VLM
+```
+
 ## Structure du projet
 
 ```
