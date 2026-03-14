@@ -76,7 +76,7 @@ Tesseract doit être installé séparément : [guide d'installation](https://tes
 
 ## Configuration
 
-1. Copier `.env.example` en `.env` et renseigner les identifiants du serveur VLM :
+1. Copier `.env.example` en `.env` et renseigner les identifiants du serveur LLM et VLM :
 
 ```bash
 cp .env.example .env
