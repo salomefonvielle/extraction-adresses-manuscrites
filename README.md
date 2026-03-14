@@ -103,3 +103,11 @@ python main.py --config /chemin/vers/config.yaml
 ```
 
 > **Note** : Ce projet a été développé dans un environnement institutionnel. Les données et les accès au modèles LLM et VLM internes ne sont pas fournis.
+
+## Perspectives
+
+Les tests ont été réalisés sur 2 documents. Pour valider statistiquement le choix de pipeline, la prochaine étape consiste à **industrialiser l'évaluation à grande échelle** via un script Bash orchestrant le pipeline sur un échantillon représentatif :
+
+- Lancement automatisé en lot (`batch`) sur l'ensemble du corpus
+- Collecte des métriques de sortie (adresse extraite, temps de traitement, statut)
+- Comparaison systématique des résultats `vlm_llm` vs `vlm_vlm` sur un volume suffisant pour conclure
