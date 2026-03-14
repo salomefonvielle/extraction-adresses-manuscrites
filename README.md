@@ -4,9 +4,9 @@ Pipeline d'extraction automatique d'adresses postales à partir de documents off
 
 ## Contexte
 
-Une base de données institutionnelle recense des documents officiels (actes notariés, jugements, etc.) dont une partie est scannée, manuscrite ou dactylographiée. L'objectif est d'en extraire automatiquement l'adresse de domicile d'une personne afin de fiabiliser les données de la base.
+Une base de données institutionnelle recense des documents officiels (actes notariés, jugements, etc.) dont une partie est scannée, manuscrite ou dactylographiée. L'objectif est d'en extraire automatiquement l'adresse de domicile d'une personne afin de fiabiliser une base donnée nationale.
 
-Le principal défi : les documents **manuscrits ou formulaires scannés** rendent les OCR classiques (Tesseract) inefficaces. Ce projet explore le recours aux **modèles de vision** (VLM) pour surmonter cette limitation.
+Le principal défi : les documents **manuscrits** rendent les OCR classiques (Tesseract) inefficaces. Ce projet explore le recours aux **modèles de vision** (VLM) pour surmonter cette limitation.
 
 ## Trois pipelines comparées
 
@@ -16,7 +16,7 @@ Le principal défi : les documents **manuscrits ou formulaires scannés** renden
 | `vlm_llm` | VLM (Qwen3-VL) | LLM | ✅ Recommandée |
 | `vlm_vlm` | VLM (Qwen3-VL) | VLM | ⚠️ À surveiller (~40s/doc) |
 
-**Conclusion des tests** : Tesseract est exclu pour ce type de documents. La pipeline `vlm_llm` offre la meilleure fiabilité (~2m24s/doc). La pipeline `vlm_vlm` est plus rapide mais introduit des erreurs d'initiative (ex. "avenue" remplacée par "rue").
+**Conclusion des tests** : Tesseract est exclu pour ce type de documents. La pipeline `vlm_llm` offre la meilleure fiabilité mais à un coût computationnel et une durée de traitement élevé (~2m24s/doc). La pipeline `vlm_vlm` est plus rapide mais introduit des erreurs d'initiative (ex. "avenue" remplacée par "rue").
 
 ## Architecture
 
@@ -89,4 +89,4 @@ python main.py
 python main.py --config /chemin/vers/config.yaml
 ```
 
-> **Note** : Ce projet a été développé dans un environnement institutionnel. Les données et les accès au serveur VLM interne ne sont pas fournis.
+> **Note** : Ce projet a été développé dans un environnement institutionnel. Les données et les accès au modèles LLM et VLM internes ne sont pas fournis.
