@@ -10,13 +10,26 @@ Le principal défi : les documents **manuscrits** rendent les OCR classiques (Te
 
 ## Trois pipelines comparées
 
-| Pipeline | OCR | Extraction | Résultat |
-|---|---|---|---|
-| `tesseract_llm` | Tesseract | LLM | ❌ Échec sur manuscrits |
-| `vlm_llm` | VLM (Qwen3-VL) | LLM | ✅ Recommandée |
-| `vlm_vlm` | VLM (Qwen3-VL) | VLM | ⚠️ À surveiller (~40s/doc) |
+| Pipeline | OCR | Extraction | Durée / doc | Résultat |
+|---|---|---|---|---|
+| `tesseract_llm` | Tesseract | LLM | — | ❌ Exclu |
+| `vlm_llm` | VLM (Qwen3-VL) | LLM | ~2m24s | ✅ Recommandée |
+| `vlm_vlm` | VLM (Qwen3-VL) | VLM | ~40s | ⚠️ À surveiller |
 
-**Conclusion des tests** : Tesseract est exclu pour ce type de documents. La pipeline `vlm_llm` offre la meilleure fiabilité mais à un coût computationnel et une durée de traitement élevé (~2m24s/doc). La pipeline `vlm_vlm` est plus rapide mais introduit des erreurs d'initiative (ex. "avenue" remplacée par "rue").
+### Résultats des tests (2 documents)
+
+Deux types de documents ont été testés : un document **entièrement manuscrit** et un document **mixte (tapuscrit + manuscrit)**.
+
+| | `tesseract_llm` | `vlm_llm` | `vlm_vlm` |
+|---|---|---|---|
+| **Doc. 1 — Manuscrit** | ❌ Résultat vide (texte non reconnu) | ✅ Adresse correctement extraite | ✅ Adresse correctement extraite |
+| **Doc. 2 — Mixte** | ❌ Mauvaise adresse (donateur extrait à la place du donataire) | ⚠️ Coquille sur le nom de l'avenue | ⚠️ Coquille + "avenue" remplacée par "rue" (erreur d'initiative) |
+
+### Conclusion
+
+Tesseract est **exclu** pour ce type de documents manuscrits. La pipeline `vlm_llm` offre la meilleure fiabilité mais implique un coût computationnel et une durée de traitement élevés (~2m24s/doc). La pipeline `vlm_vlm` est plus rapide (~40s/doc) mais introduit des erreurs d'initiative.
+
+Une **industrialisation sur un échantillon plus large** serait nécessaire pour trancher définitivement entre `vlm_llm` et `vlm_vlm`.
 
 ## Architecture
 
