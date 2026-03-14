@@ -82,14 +82,9 @@ Tesseract doit être installé séparément : [guide d'installation](https://tes
 cp .env.example .env
 ```
 
-2. Adapter `config.yaml` avec les chemins vers vos données et le choix de pipeline :
+2. Adapter si besoin les chemins dans `config.yaml` (relatifs à la racine du projet) et choisir la pipeline :
 
 ```yaml
-paths:
-  input_csv: "datas/inputs/fichier_traites.csv"
-  pdf_dir: "datas/inputs/PDF"
-  ...
-
 pipeline:
   extraction_engine: "vlm_llm"  # tesseract_llm | vlm_llm | vlm_vlm
 ```
