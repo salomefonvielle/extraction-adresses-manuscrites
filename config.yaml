@@ -1,0 +1,60 @@
+# ------------------------------------------------------------------
+# Paramètres généraux du projet
+# ------------------------------------------------------------------
+paths:
+  # CSV d’entrée (déjà enrichi avec la colonne « index »)
+  input_csv: "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/datas/inputs/fichier_traites.csv"
+
+  # CSV de sortie après l’ajout de la colonne « index » et l’enrichissement PDF
+ 
+  input_csv_enrichi: "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/datas/outputs/fichier_traites_enrichis.csv"
+
+  # Répertoire contenant les PDF à associer
+  pdf_dir: "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/datas/inputs/PDF"
+
+  # Emplacements des résultats intermédiaires / finaux pour vlm_llm
+  extraction_output_vlm_llm: "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/datas/outputs/vlm_llm/predictions.csv"
+  ocr_vlm: "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/datas/outputs/vlm_llm/ocr.csv"
+
+  # Emplacements des résultats intermédiaires / finaux pour tesseract_llm
+  extraction_output_tess_llm: "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/datas/outputs/tesseract_llm/predictions.csv"
+  ocr_tess: "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/datas/outputs/tesseract_llm/ocr.csv"
+
+  # Emplacements des résultats intermédiaires / finaux pour vlm_vlm
+  extraction_output_vlm_vlm: "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/datas/outputs/vlm_vlm/predictions.csv"
+
+  # Répertoire où seront écrits les fichiers de logs
+  log_dir: "logs/tesseract_llm"
+
+# ------------------------------------------------------------------
+# Configuration du logger
+# ------------------------------------------------------------------
+logging:
+  # Niveau de logs : DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+
+  # Modèle de nom de fichier de log (déjà utilisé dans le script)
+  filename_pattern: "%Y-%m-%d_%H-%M-%S.log"
+
+  # Format des messages de log
+  format: "%(asctime)s [%(levelname)s] %(name)s – %(message)s"
+
+  # Format de la date affichée dans les logs
+  datefmt: "%Y-%m-%d %H:%M:%S"
+
+# ------------------------------------------------------------------
+# Options Pandas (lecture / écriture)
+# ------------------------------------------------------------------
+pandas:
+  read_options:
+    dtype: str          # toutes les colonnes sont lues comme chaînes
+
+  write_options:
+    index: false        # ne pas écrire l’index Pandas dans le CSV
+
+# ------------------------------------------------------------------
+# Choix du moteur du pipeline
+# ------------------------------------------------------------------
+pipeline:
+  # 2 pipelines possibles : "tesseract_llm", "vlm_llm" ou "vlm_vlm"
+  extraction_engine: "vlm_llm"
