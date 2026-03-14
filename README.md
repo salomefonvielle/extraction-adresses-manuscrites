@@ -14,7 +14,7 @@ Le principal défi : les documents **manuscrits** rendent les OCR classiques (Te
 |---|---|---|---|---|
 | `tesseract_llm` | Tesseract | LLM | — | ❌ Exclu |
 | `vlm_llm` | VLM (Qwen3-VL) | LLM | ~2m24s | ✅ Recommandée |
-| `vlm_vlm` | VLM (Qwen3-VL) | VLM | ~40s | ⚠️ À surveiller |
+| `vlm_vlm` | — (lecture directe) | VLM (Qwen3-VL) | ~40s | ⚠️ À surveiller |
 
 ### Résultats des tests (2 documents)
 
@@ -33,28 +33,40 @@ Une **industrialisation sur un échantillon plus large** serait nécessaire pour
 
 ## Architecture
 
-Les pipelines `tesseract_llm` et `vlm_llm` suivent une architecture en 3 étapes :
+### Étape 0 — Prétraitement (commune à toutes les pipelines)
 
 ```
-PDF → [1. OCR] → texte brut → [2. Scoring] → meilleur paragraphe → [3. Extraction LLM] → adresse structurée
+CSV d'entrée + répertoire PDF → [Prétraitement] → CSV enrichi (avec chemins PDF)
 ```
 
-**Étape 1 — OCR** (`code/utils/first_step_ocr/`)
-Transcription page par page via VLM (Qwen3-VL) ou Tesseract.
-
-**Étape 2 — Scoring** (`code/utils/second_step_scores/`)
-Identification du paragraphe contenant l'adresse par fuzzy matching sur le nom, les prénoms, la date de naissance et le code postal.
-
-**Étape 3 — Extraction** (`code/utils/third_step_extraction/`)
-Extraction structurée de l'adresse via LLM.
+**`code/pretraitement_data.py`** : associe chaque ligne du CSV au fichier PDF correspondant. Lancé automatiquement par `main.py` si le CSV enrichi n'existe pas encore.
 
 ---
 
-La pipeline `vlm_vlm` fonctionne différemment : le VLM reçoit directement les images du PDF ainsi que les données d'identité de la personne, et retourne en une seule passe le JSON structuré sans étape OCR ni scoring intermédiaire.
+### Pipelines `tesseract_llm` et `vlm_llm` — 3 étapes
 
 ```
-PDF + identité → [VLM] → adresse structurée (JSON)
+CSV enrichi → [1. OCR] → texte brut → [2. Scoring] → meilleur paragraphe → [3. Extraction LLM] → adresse structurée
 ```
+
+**Étape 1 — OCR** (`code/utils/first_step_ocr/`)
+Transcription page par page : Tesseract pour `tesseract_llm`, VLM (Qwen3-VL) pour `vlm_llm`.
+
+**Étape 2 — Scoring** (`code/utils/second_step_scores/`)
+Identification du paragraphe le plus pertinent par fuzzy matching sur le nom, les prénoms, la date de naissance et le code postal.
+
+**Étape 3 — Extraction LLM** (`code/utils/third_step_extraction/`)
+Extraction structurée de l'adresse via LLM à partir du paragraphe sélectionné.
+
+---
+
+### Pipeline `vlm_vlm` — extraction directe en une passe
+
+```
+CSV enrichi → [VLM + identité] → adresse structurée (JSON)
+```
+
+Le VLM reçoit directement les images du PDF et les données d'identité (nom, prénom, date de naissance) injectées dans le prompt. Il retourne un JSON structuré sans étape OCR ni scoring intermédiaire.
 
 ## Structure du projet
 
