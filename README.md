@@ -33,18 +33,28 @@ Une **industrialisation sur un échantillon plus large** serait nécessaire pour
 
 ## Architecture
 
+Les pipelines `tesseract_llm` et `vlm_llm` suivent une architecture en 3 étapes :
+
 ```
-PDF → [1. OCR] → texte brut → [2. Scoring] → meilleur paragraphe → [3. Extraction] → adresse structurée
+PDF → [1. OCR] → texte brut → [2. Scoring] → meilleur paragraphe → [3. Extraction LLM] → adresse structurée
 ```
 
 **Étape 1 — OCR** (`code/utils/first_step_ocr/`)
-Transcription page par page via VLM ou Tesseract.
+Transcription page par page via VLM (Qwen3-VL) ou Tesseract.
 
 **Étape 2 — Scoring** (`code/utils/second_step_scores/`)
 Identification du paragraphe contenant l'adresse par fuzzy matching sur le nom, les prénoms, la date de naissance et le code postal.
 
 **Étape 3 — Extraction** (`code/utils/third_step_extraction/`)
-Extraction structurée de l'adresse via LLM ou VLM.
+Extraction structurée de l'adresse via LLM.
+
+---
+
+La pipeline `vlm_vlm` fonctionne différemment : le VLM reçoit directement les images du PDF ainsi que les données d'identité de la personne, et retourne en une seule passe le JSON structuré sans étape OCR ni scoring intermédiaire.
+
+```
+PDF + identité → [VLM] → adresse structurée (JSON)
+```
 
 ## Structure du projet
 
