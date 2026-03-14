@@ -9,3 +9,5 @@ rapidfuzz
 regex
 tqdm
 python-dotenv
+openai
+s3fs

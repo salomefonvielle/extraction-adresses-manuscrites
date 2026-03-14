@@ -12,9 +12,9 @@ Le principal défi : les documents **manuscrits** rendent les OCR classiques (Te
 
 | Pipeline | OCR | Extraction | Durée / doc | Qualité / Coût | Résultat |
 |---|---|---|---|---|---|
-| `tesseract_llm` | Tesseract | LLM | — | Rapide, peu coûteux | ❌ Exclu |
-| `vlm_llm` | VLM (Qwen3-VL) | LLM | ~2m24s | Qualitatif, coûteux | ✅ Recommandée |
-| `vlm_vlm` | — (lecture directe) | VLM (Qwen3-VL) | ~40s | Intermédiaire | ⚠️ À surveiller |
+| `tesseract_llm` | Tesseract | LLM (Gpt-oss-120b) | — | Rapide, peu coûteux | ❌ Exclu |
+| `vlm_llm` | VLM (Qwen3-VL-32B) | LLM (Gpt-oss-120b) | ~2m24s | Qualitatif, coûteux | ✅ Recommandée |
+| `vlm_vlm` | — (lecture directe) | VLM (Qwen3-VL-32B) | ~40s | Intermédiaire | ⚠️ À surveiller |
 
 ### Résultats des tests (2 documents)
 
@@ -50,13 +50,13 @@ CSV enrichi → [1. OCR] → texte brut → [2. Scoring] → meilleur paragraphe
 ```
 
 **Étape 1 — OCR** (`code/utils/first_step_ocr/`)
-Transcription page par page : Tesseract pour `tesseract_llm`, VLM (Qwen3-VL) pour `vlm_llm`.
+Transcription page par page : Tesseract pour `tesseract_llm`, VLM (Qwen3-VL-32B) pour `vlm_llm`.
 
 **Étape 2 — Scoring** (`code/utils/second_step_scores/`)
 Identification du paragraphe le plus pertinent par fuzzy matching sur le nom, les prénoms, la date de naissance et le code postal.
 
 **Étape 3 — Extraction LLM** (`code/utils/third_step_extraction/`)
-Extraction structurée de l'adresse via LLM à partir du paragraphe sélectionné.
+Extraction structurée de l'adresse via LLM (Gpt-oss-120b) à partir du paragraphe sélectionné.
 
 ---
 
