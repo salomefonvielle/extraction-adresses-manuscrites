@@ -34,7 +34,7 @@ logging.basicConfig(
 
 log = logging.getLogger(__name__)
 # ------------------------------------------------------------------
-def run_pipeline_vlm_vlm(cfg_path: str = "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/config.yaml") -> None:
+def run_pipeline_vlm_vlm(cfg_path: str = str(pathlib.Path(__file__).resolve().parent.parent / "config.yaml")) -> None:
     """
     Exécute le pipeline VLM‑VLM.
 

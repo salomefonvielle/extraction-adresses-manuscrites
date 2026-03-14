@@ -41,7 +41,7 @@ log = logging.getLogger(__name__)
 # Fonction principale
 # ------------------------------------------------------------------
 def run_pretraitement(
-    cfg_path: str = "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/config.yaml",
+    cfg_path: str = str(pathlib.Path(__file__).resolve().parent.parent / "config.yaml"),
     quiet: bool = False,
 ) -> None:
     """
@@ -108,7 +108,7 @@ def run_pretraitement(
     )
     log.debug(f"⏱  CSV temporaire écrit : {temp_csv}")
     log.info("📥 Lancement de l’enrichissement avec les chemins PDFs")
-    enrich_csv_with_pdf_path(temp_csv, CSV_OUT)
+    enrich_csv_with_pdf_path(temp_csv, CSV_OUT, PDF_DIR)
 
     # ------------------------------------------------------------------
     # Nettoyage du fichier temporaire

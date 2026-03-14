@@ -44,7 +44,7 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 # ------------------------------------------------------------------
 def run_pipeline_vlm_llm(
-    cfg_path: str = "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/config.yaml",
+    cfg_path: str = str(pathlib.Path(__file__).resolve().parent.parent / "config.yaml"),
     quiet: bool = False,
 ) -> None:
     """

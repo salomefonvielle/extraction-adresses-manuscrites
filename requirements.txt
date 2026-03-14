@@ -1,0 +1,11 @@
+pandas
+pyyaml
+requests
+pillow
+pdf2image
+PyPDF2
+pytesseract
+rapidfuzz
+regex
+tqdm
+python-dotenv

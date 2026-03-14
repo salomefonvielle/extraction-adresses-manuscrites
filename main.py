@@ -4,12 +4,8 @@ import logging
 import yaml
 
 # Fonctions de vos différents pipelines
-BASE_DIR = pathlib.Path(__file__).resolve()
-sys.path.append(str(BASE_DIR))                              # ← rendant « BASE_DIR » visible
-from code.pretraitement_data import run_pretraitement
-from code.extraction_vlm_llm import run_pipeline_vlm_llm
-from code.extraction_tesseract_llm import run_pipeline_tesseract_llm
-from code.extraction_vlm_vlm import run_pipeline_vlm_vlm
+BASE_DIR = pathlib.Path(__file__).resolve().parent
+sys.path.append(str(BASE_DIR))
 from code.pretraitement_data import run_pretraitement
 from code.extraction_vlm_llm import run_pipeline_vlm_llm
 from code.extraction_tesseract_llm import run_pipeline_tesseract_llm
@@ -18,7 +14,7 @@ from code.extraction_vlm_vlm import run_pipeline_vlm_vlm
 # ----------------------------------------------------------------------
 # Configuration du logger (utilisé partout dans ce script)
 # ----------------------------------------------------------------------
-LOG_DIR = pathlib.Path("logs/run_all")
+LOG_DIR = BASE_DIR / "logs" / "run_all"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 log_file = LOG_DIR / f"{pathlib.Path(__file__).stem}.log"
 logging.basicConfig(
@@ -35,9 +31,7 @@ log = logging.getLogger(__name__)
 # ----------------------------------------------------------------------
 # Chemin du fichier de configuration (peut être passé en argument si besoin)
 # ----------------------------------------------------------------------
-DEFAULT_CFG_PATH = (
-    "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/config.yaml"
-)
+DEFAULT_CFG_PATH = str(BASE_DIR / "config.yaml")
 
 
 def load_cfg(cfg_path: str = DEFAULT_CFG_PATH) -> dict:
@@ -46,55 +40,54 @@ def load_cfg(cfg_path: str = DEFAULT_CFG_PATH) -> dict:
         return yaml.safe_load(f)
 
 
-def maybe_run_pretraitement(cfg: dict) -> None:
+def maybe_run_pretraitement(cfg: dict, cfg_path: str) -> None:
     """
-    Lance le pré‑traitement uniquement si le CSV enrichi n’existe pas.
+    Lance le pré‑traitement uniquement si le CSV enrichi n'existe pas.
 
-    Le chemin du CSV enrichi est attendu dans ``cfg["paths"]["output_csv"]``.
+    Le chemin du CSV enrichi est attendu dans ``cfg["paths"]["input_csv_enrichi"]``.
     """
     enriched_csv = pathlib.Path(cfg["paths"]["input_csv_enrichi"])
     if not enriched_csv.is_file():
         log.info("🚀 CSV enrichi introuvable → lancement du pré‑traitement")
-        # La fonction run_pretraitement accepte généralement le chemin de config
-        # et éventuellement le mode « quiet ».  On transmet uniquement le cfg_path.
-        run_pretraitement(cfg_path=DEFAULT_CFG_PATH, quiet=False)
+        run_pretraitement(cfg_path=cfg_path, quiet=False)
     else:
-        log.info(f"✅ CSV enrichi déjà présent : {enriched_csv}")
+        log.info(f"✅ CSV enrichi déjà présent : {enriched_csv}")
 
 
-def run_extraction_pipeline(cfg: dict) -> None:
+def run_extraction_pipeline(cfg: dict, cfg_path: str) -> None:
     """
-    Sélectionne et exécute la pipeline d’extraction demandée.
+    Sélectionne et exécute la pipeline d'extraction demandée.
 
     - ``tesseract_llm`` → :func:`run_pipeline_tesseract_llm`
     - ``vlm_llm``       → :func:`run_pipeline_vlm_llm`
-    - tout autre valeur → fallback sur ``tesseract_llm``
+    - ``vlm_vlm``       → :func:`run_pipeline_vlm_vlm`
     """
     engine = cfg["pipeline"].get("extraction_engine", "tesseract_llm")
     if engine == "tesseract_llm":
         log.info("▶ Lancement de la pipeline Tesseract → LLM")
-        run_pipeline_tesseract_llm(cfg_path=DEFAULT_CFG_PATH)
+        run_pipeline_tesseract_llm(cfg_path=cfg_path)
     elif engine == "vlm_llm":
         log.info("▶ Lancement de la pipeline VLM → LLM")
-        run_pipeline_vlm_llm(cfg_path=DEFAULT_CFG_PATH)
-    elif engine == "vlm_vlm" : 
-        run_pipeline_vlm_vlm(cfg_path=DEFAULT_CFG_PATH)
-
+        run_pipeline_vlm_llm(cfg_path=cfg_path)
+    elif engine == "vlm_vlm":
+        log.info("▶ Lancement de la pipeline VLM → VLM")
+        run_pipeline_vlm_vlm(cfg_path=cfg_path)
     else:
         log.warning(
             f"⚠️ extraction_engine '{engine}' inconnu, utilisation du fallback Tesseract → LLM"
         )
+        run_pipeline_tesseract_llm(cfg_path=cfg_path)
 
 
 def main(cfg_path: str = DEFAULT_CFG_PATH) -> None:
-    """Point d’entrée du script."""
+    """Point d'entrée du script."""
     cfg = load_cfg(cfg_path)
 
     # 1️⃣  Pré‑traitement (si besoin)
-    maybe_run_pretraitement(cfg)
+    maybe_run_pretraitement(cfg, cfg_path)
 
-    # 2️⃣  Pipeline d’extraction choisie
-    run_extraction_pipeline(cfg)
+    # 2️⃣  Pipeline d'extraction choisie
+    run_extraction_pipeline(cfg, cfg_path)
 
 
 # ----------------------------------------------------------------------
@@ -103,7 +96,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Orchestre le pré‑traitement + la pipeline d’extraction."
+        description="Orchestre le pré‑traitement + la pipeline d'extraction."
     )
     parser.add_argument(
         "--config",

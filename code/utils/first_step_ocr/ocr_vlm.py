@@ -117,18 +117,11 @@ def run_vlm_on_image(
     # -------------------------------------------------
     resp = requests.post(url, json=payload, headers=headers, timeout=timeout)
     resp.raise_for_status()
-    # 👇 DEBUG TEMPORAIRE – à supprimer après diagnostic
-    raw_response = resp.json()
-    raw_text = raw_response["choices"][0]["message"]["content"] or ""
-
-    # Le contenu est maintenant du texte brut (Markdown) directement
     raw_text = resp.json()["choices"][0]["message"]["content"] or ""
     if isinstance(raw_text, (list, tuple)):
         raw_text = " ".join(map(str, raw_text))
 
-    # Compatibilité : on reconstruit un dict minimal comme avant
     resultat_json = {"text": raw_text}
-    resultat_json["text"] = raw_text  # garantit un string (déjà le cas)
 
     # -------------------------------------------------
     # Ajout des métadonnées attendues
