@@ -1,40 +1,57 @@
 # Extraction d'adresses depuis des documents PDF
 
-Pipeline d'extraction automatique d'adresses postales à partir de documents PDF, développé dans le cadre d'un stage à la DGFIP.
+Pipeline d'extraction automatique d'adresses postales à partir de documents officiels numérisés, développé dans le cadre d'un stage en institution.
 
-## Présentation
+## Contexte
 
-Le projet vise à fiabiliser les adresses fiscales en extrayant automatiquement l'adresse de domicile d'un contribuable depuis des documents officiels numérisés (actes notariés, jugements, etc.).
+Une base de données institutionnelle recense des documents officiels (actes notariés, jugements, etc.) dont une partie est scannée, manuscrite ou dactylographiée. L'objectif est d'en extraire automatiquement l'adresse de domicile d'une personne afin de fiabiliser les données de la base.
 
-Le pipeline combine OCR et modèles de langage (LLM/VLM) pour identifier et extraire les informations d'adresse de manière robuste, même sur des documents de mauvaise qualité.
+Le principal défi : les documents **manuscrits ou formulaires scannés** rendent les OCR classiques (Tesseract) inefficaces. Ce projet explore le recours aux **modèles de vision** (VLM) pour surmonter cette limitation.
+
+## Trois pipelines comparées
+
+| Pipeline | OCR | Extraction | Résultat |
+|---|---|---|---|
+| `tesseract_llm` | Tesseract | LLM | ❌ Échec sur manuscrits |
+| `vlm_llm` | VLM (Qwen3-VL) | LLM | ✅ Recommandée |
+| `vlm_vlm` | VLM (Qwen3-VL) | VLM | ⚠️ À surveiller (~40s/doc) |
+
+**Conclusion des tests** : Tesseract est exclu pour ce type de documents. La pipeline `vlm_llm` offre la meilleure fiabilité (~2m24s/doc). La pipeline `vlm_vlm` est plus rapide mais introduit des erreurs d'initiative (ex. "avenue" remplacée par "rue").
 
 ## Architecture
 
-Le pipeline se déroule en trois étapes :
-
 ```
-PDF → [1. OCR] → texte brut → [2. Scoring] → meilleur paragraphe → [3. Extraction LLM] → adresse structurée
+PDF → [1. OCR] → texte brut → [2. Scoring] → meilleur paragraphe → [3. Extraction] → adresse structurée
 ```
 
 **Étape 1 — OCR** (`code/utils/first_step_ocr/`)
-- `ocr_vlm.py` : transcription via un VLM (Qwen3-VL-32B) appelé par API
-- `ocr_tesseract.py` : transcription via Tesseract (fallback local)
+Transcription page par page via VLM ou Tesseract.
 
 **Étape 2 — Scoring** (`code/utils/second_step_scores/`)
-- Identifie les paragraphes candidats (mots-clés de civilité)
-- Score chaque candidat via fuzzy matching sur le nom, les prénoms, la date de naissance et le code postal
+Identification du paragraphe contenant l'adresse par fuzzy matching sur le nom, les prénoms, la date de naissance et le code postal.
 
 **Étape 3 — Extraction** (`code/utils/third_step_extraction/`)
-- `extraction_llm.py` : extraction structurée via un LLM
-- `extraction_vlm.py` : extraction directe via un VLM (pipeline vlm_vlm)
+Extraction structurée de l'adresse via LLM ou VLM.
 
-## Trois pipelines disponibles
+## Structure du projet
 
-| Pipeline | OCR | Extraction | Usage recommandé |
-|---|---|---|---|
-| `tesseract_llm` | Tesseract | LLM | Environnement sans GPU |
-| `vlm_llm` | VLM | LLM | Meilleure précision OCR |
-| `vlm_vlm` | VLM | VLM | Pipeline entièrement VLM |
+```
+.
+├── main.py                          # Point d'entrée
+├── config.yaml                      # Chemins et choix de pipeline
+├── requirements.txt
+├── .env.example                     # Variables d'environnement à renseigner
+└── code/
+    ├── pretraitement_data.py        # Enrichissement CSV avec chemins PDF
+    ├── extraction_vlm_llm.py        # Orchestration pipeline VLM → LLM
+    ├── extraction_tesseract_llm.py  # Orchestration pipeline Tesseract → LLM
+    ├── extraction_vlm_vlm.py        # Orchestration pipeline VLM → VLM
+    └── utils/
+        ├── pretraitement.py         # Utilitaires CSV/PDF
+        ├── first_step_ocr/          # Modules OCR
+        ├── second_step_scores/      # Scoring des paragraphes candidats
+        └── third_step_extraction/   # Extraction finale
+```
 
 ## Installation
 
@@ -52,13 +69,12 @@ Tesseract doit être installé séparément : [guide d'installation](https://tes
 cp .env.example .env
 ```
 
-2. Adapter `config.yaml` avec les chemins vers vos données :
+2. Adapter `config.yaml` avec les chemins vers vos données et le choix de pipeline :
 
 ```yaml
 paths:
   input_csv: "datas/inputs/fichier_traites.csv"
   pdf_dir: "datas/inputs/PDF"
-  input_csv_enrichi: "datas/outputs/fichier_traites_enrichis.csv"
   ...
 
 pipeline:
@@ -73,22 +89,4 @@ python main.py
 python main.py --config /chemin/vers/config.yaml
 ```
 
-## Structure du projet
-
-```
-.
-├── main.py                        # Point d'entrée
-├── config.yaml                    # Configuration (chemins, pipeline)
-├── requirements.txt
-├── .env.example
-└── code/
-    ├── pretraitement_data.py      # Étape 0 : enrichissement CSV avec chemins PDF
-    ├── extraction_vlm_llm.py      # Orchestration pipeline VLM → LLM
-    ├── extraction_tesseract_llm.py# Orchestration pipeline Tesseract → LLM
-    ├── extraction_vlm_vlm.py      # Orchestration pipeline VLM → VLM
-    └── utils/
-        ├── pretraitement.py       # Fonctions utilitaires CSV/PDF
-        ├── first_step_ocr/        # Modules OCR
-        ├── second_step_scores/    # Scoring des paragraphes candidats
-        └── third_step_extraction/ # Extraction finale via LLM/VLM
-```
+> **Note** : Ce projet a été développé dans un environnement institutionnel. Les données et les accès au serveur VLM interne ne sont pas fournis.
