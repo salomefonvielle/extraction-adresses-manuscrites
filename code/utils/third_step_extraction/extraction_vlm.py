@@ -285,7 +285,7 @@ def appel_vlm(x):
     content.append({"type": "text", "text": prompt_dynamique})
     
     payload = {
-        "model": "Qwen3-VL-32B-Instruct-FP8",
+        "model": os.getenv("PIA_MODEL", "Qwen3-VL-32B-Instruct-FP8"),
         "messages": [{"role": "user", "content": content}],
         "temperature": 0,
         "response_format": {"type": "json_object"},
