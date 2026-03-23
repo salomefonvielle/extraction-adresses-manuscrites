@@ -8,6 +8,8 @@ Une base de données institutionnelle recense des documents officiels (actes not
 
 Le principal défi : les documents **manuscrits** rendent les OCR classiques (Tesseract) inefficaces. Ce projet explore le recours aux **modèles de vision** (VLM) pour surmonter cette limitation.
 
+Ce code permet de te traiter un csv en entrée contenant par ligne l'identité d'une personne et l'identifiant du document pdf contenant son adresse. L'objectif est d'extraire l'adresse de ce docuement. 
+
 ## Trois pipelines comparées
 
 | Pipeline | OCR | Extraction | Durée / doc | Qualité / Coût | Résultat |
