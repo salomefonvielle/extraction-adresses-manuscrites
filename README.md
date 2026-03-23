@@ -18,7 +18,7 @@ Le docuement à traiter est un csv contenant par ligne l'identité d'une personn
 | `vlm_llm` | VLM (Qwen3-VL-32B-Instruct-FP8) | LLM (Gpt-oss-120b) | ~2m24s | Qualitatif, coûteux | ✅ Recommandée |
 | `vlm_vlm` | — (lecture directe) | VLM (Qwen3-VL-32B-Instruct-FP8) | ~40s | Intermédiaire | ⚠️ À surveiller |
 
-### Résultats des tests (2 documents)
+### Résultats des tests (2 documents, l'industrialisation pour test sur 17 000 docuements est à venir)
 
 Deux types de documents ont été testés : un document **entièrement manuscrit** et un document **mixte (tapuscrit + manuscrit)**.
 
