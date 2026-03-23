@@ -11,21 +11,9 @@ from dotenv import load_dotenv
 ## Client PIA 
 load_dotenv(override=True) 
 
-# Construction de la valeur (vous pouvez la mettre en dur ou la lire d’une source)
-NO_PROXY_VALUE = (
-    "100.70.1.199,"
-    "forge.dgfip.finances.rie.gouv.fr,"
-    "pia-exp-back.dev.dgfip,"
-    "pia-exp-front.dev.dgfip,"
-    "10.156.253.10,"
-    "huggingface.co,"
-    "10.156.253.13,"
-    "10.156.226.144,"
-    "10.156.226.145"
-)
-
-# On surcharge (ou crée) la variable d’environnement du processus
-os.environ["no_proxy"] = NO_PROXY_VALUE
+no_proxy = os.getenv("NO_PROXY", "")
+if no_proxy:
+    os.environ["no_proxy"] = no_proxy
 
 # (Facultatif) : afficher pour vérifier
 print("no_proxy =", os.getenv("no_proxy"))
@@ -166,28 +154,35 @@ def get_predictions(x) :
     return x
 
 #Extraire les données de ce paragraphe
-def get_pred(df, df_in, extraction_output_path):
+def get_pred(df, df_in, extraction_output_path, append=False):
     """
     Utilise un LLM pour extraire l'adresse de chaque paragraphe ayant le plus haut score
-    
+
     Args:
         df (pandas.DataFrame): le DataFrame contenant les plus haut scores
-    
+        df_in (pandas.DataFrame): le DataFrame source (lignes originales du CSV)
+        extraction_output_path: chemin du CSV de sortie
+        append (bool): si True, écrit en mode ajout (pour le traitement par batch)
+
     Returns:
-        pandas.DataFrame: le DataFrame contenant lces prédictions LLM
+        pandas.DataFrame: le DataFrame contenant les prédictions LLM
     """
-    #Pour chaque personne on formule un prompt 
-    
+    from pathlib import Path
+
+    #Pour chaque personne on formule un prompt
     df=df.apply(get_prompts, axis=1)
     df=df.apply(get_fetch_completion, axis=1)
     df=df.apply(get_extract_json_from_text, axis=1)
-    df=df.apply(get_predictions, axis=1) 
+    df=df.apply(get_predictions, axis=1)
 
     df_out=df_in.copy()
-    df_final=pd.merge(df_out, df[["doc_idatlas","NOM_PRENOM","COMMUNE_NAISSANCE", "PAYS_NAISSANCE", "COMMUNE_DOMICILE","CODE_POSTAL_DOMICILE", "ARRONDISSEMENT_DOMICILE","DEPARTEMENT_DOMICILE","REGION_DOMICILE","DEPARTEMENT_DOMICILE","PAYS_DOMICILE","NOM_VOIE_DOMICILE","BONNE_PERSONNE"]], 
+    df_final=pd.merge(df_out, df[["doc_idatlas","NOM_PRENOM","COMMUNE_NAISSANCE", "PAYS_NAISSANCE", "COMMUNE_DOMICILE","CODE_POSTAL_DOMICILE", "ARRONDISSEMENT_DOMICILE","DEPARTEMENT_DOMICILE","REGION_DOMICILE","DEPARTEMENT_DOMICILE","PAYS_DOMICILE","NOM_VOIE_DOMICILE","BONNE_PERSONNE", "tot_score", "text"]],
                       on="doc_idatlas",
                       how="left" )
-    
-    df_final.to_csv(extraction_output_path, index=False)
+
+    output_path = Path(extraction_output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    write_header = not append or not output_path.is_file()
+    df_final.to_csv(output_path, mode="a" if append else "w", index=False, header=write_header)
 
     return df_final

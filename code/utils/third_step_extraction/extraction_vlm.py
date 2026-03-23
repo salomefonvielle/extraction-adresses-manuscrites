@@ -20,9 +20,6 @@ DEFAULT_MODEL_SEQ_LEN = 90000
 
 load_dotenv(override=True)
 
-CSV_OUTPUT = "/home/sfonvielle-stagiai01/projets/new_extraction_adresse/local/fichiers_traite.csv"
-
-
 API_IP = os.getenv("PIA_IP")
 API_PORT = os.getenv("PIA_PORT")
 API_KEY = os.getenv("PIA_API_KEY")
@@ -55,18 +52,9 @@ s3 = s3fs.S3FileSystem(
 )
 
 
-# config_no_proxy.py
-import os
-
-# -------------------------------------------------------------------------
-# Configuration du proxy – équivalent de la magic %env du notebook
-# -------------------------------------------------------------------------
-os.environ["no_proxy"] = (
-    "100.70.1.199,forge.dgfip.finances.rie.gouv.fr,"
-    "pia-exp-back.dev.dgfip,pia-exp-front.dev.dgfip,"
-    "10.156.253.10,huggingface.co,10.156.253.13,"
-    "10.156.226.144,10.156.226.145"
-)
+no_proxy = os.getenv("NO_PROXY", "")
+if no_proxy:
+    os.environ["no_proxy"] = no_proxy
 
 def calculate_page_tokens(width_pt: float, height_pt: float, dpi: int) -> int:
     """Calcule le nombre de tokens pour une page selon le DPI."""
