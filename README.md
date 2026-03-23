@@ -23,7 +23,7 @@ Deux types de documents ont été testés : un document **entièrement manuscrit
 | | `tesseract_llm` | `vlm_llm` | `vlm_vlm` |
 |---|---|---|---|
 | **Doc. 1 — Manuscrit** | ❌ Résultat vide (texte non reconnu) | ✅ Adresse correctement extraite | ✅ Adresse correctement extraite |
-| **Doc. 2 — Mixte** | ❌ Mauvaise adresse (donateur extrait à la place du donataire) | ⚠️ Coquille sur le nom de l'avenue | ⚠️ Coquille + "avenue" remplacée par "rue" (erreur d'initiative) |
+| **Doc. 2 — Mixte** | ❌ Mauvaise adresse (donateur dont l'adresse est tapuscrit extrait à la place du donataire dont l'adesse est manuscrite) | ⚠️ Coquille sur le nom de l'avenue | ⚠️ Coquille + "avenue" remplacée par "rue" (erreur d'initiative) |
 
 ### Conclusion
 
