@@ -12,7 +12,7 @@ Le principal défi : les documents **manuscrits** rendent les OCR classiques (Te
 
 | Pipeline | OCR | Extraction | Durée / doc | Qualité / Coût | Résultat |
 |---|---|---|---|---|---|
-| `tesseract_llm` | Tesseract | LLM (Gpt-oss-120b) | — | Rapide, peu coûteux | ❌ Exclu |
+| `tesseract_llm` | Tesseract | LLM (Gpt-oss-120b) | ~1min | Rapide, peu coûteux | ❌ Exclu |
 | `vlm_llm` | VLM (Qwen3-VL-32B-Instruct-FP8) | LLM (Gpt-oss-120b) | ~2m24s | Qualitatif, coûteux | ✅ Recommandée |
 | `vlm_vlm` | — (lecture directe) | VLM (Qwen3-VL-32B-Instruct-FP8) | ~40s | Intermédiaire | ⚠️ À surveiller |
 
