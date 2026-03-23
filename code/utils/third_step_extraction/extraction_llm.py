@@ -15,9 +15,6 @@ no_proxy = os.getenv("NO_PROXY", "")
 if no_proxy:
     os.environ["no_proxy"] = no_proxy
 
-# (Facultatif) : afficher pour vérifier
-print("no_proxy =", os.getenv("no_proxy"))
-
 
 API_KEY = os.getenv("PIA_API_KEY")
 serveur_url = os.getenv("serveur_url")
