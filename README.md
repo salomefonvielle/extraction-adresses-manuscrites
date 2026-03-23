@@ -2,6 +2,8 @@
 
 Pipeline d'extraction automatique d'adresses postales à partir de formulaires compélétés sous forme manuscrite, numérisés, développé dans le cadre d'un stage en institution.
 
+> ⚠️ **Projet en cours** (janvier–mai 2026). Ce repository reflète l'état d'avancement fin février et sera mis à jour au fil du stage.
+
 ## Contexte
 
 Une base de données institutionnelle recense des documents officiels (actes notariés, jugements, etc.) dont une partie est scannée, manuscrite ou dactylographiée. L'objectif est d'en extraire automatiquement l'adresse de domicile d'une personne afin de fiabiliser une base donnée nationale.
